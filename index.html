@@ -3,10 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editor de Vídeo Mobile</title>
+    <title>Editor de Vídeo Avançado</title>
 
     <style>
         /* Estilos Gerais */
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --info-color: #17a2b8;
+            --light-gray: #f8f9fa;
+            --border-color: #dee2e6;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background-color: #f0f2f5;
@@ -14,151 +23,73 @@
             margin: 0;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             min-height: 100vh;
-            padding: 15px;
+            padding: 20px;
             box-sizing: border-box;
         }
 
         .container {
             width: 100%;
-            max-width: 500px;
+            max-width: 600px;
             background: #fff;
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            padding: 20px;
+            padding: 25px;
             text-align: center;
-            transition: all 0.3s ease;
         }
 
-        header h1 {
-            font-size: 1.8rem;
-            margin-bottom: 5px;
-        }
-
-        header p {
-            color: #666;
-            margin-bottom: 25px;
-        }
+        header h1 { font-size: 1.8rem; margin-bottom: 5px; }
+        header p { color: #666; margin-bottom: 25px; }
 
         /* Área de Upload */
-        #upload-area {
-            padding: 30px;
-            border: 2px dashed #ddd;
-            border-radius: 8px;
-        }
-
-        .upload-button {
-            background-color: #007bff;
-            color: white;
-            padding: 12px 25px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            display: inline-block;
-            transition: background-color 0.3s;
-        }
-
-        .upload-button:hover {
-            background-color: #0056b3;
-        }
-
-        input[type="file"] {
-            display: none;
-        }
+        #upload-area { padding: 30px; border: 2px dashed #ddd; border-radius: 8px; }
+        .upload-button { background-color: var(--primary-color); color: white; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; display: inline-block; transition: background-color 0.3s; }
+        .upload-button:hover { background-color: #0056b3; }
+        input[type="file"] { display: none; }
 
         /* Área do Editor */
-        #editor-area {
-            margin-top: 20px;
-        }
+        #editor-area { margin-top: 20px; }
+        #video-preview { width: 100%; max-height: 450px; border-radius: 8px; background: #000; margin-bottom: 20px; }
 
-        #video-preview {
-            width: 100%;
-            max-height: 400px;
-            border-radius: 8px;
-            background: #000;
-        }
+        /* Controles de Precisão */
+        #precision-controls { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+        .control-row { display: flex; justify-content: space-between; gap: 5px; }
+        .control-row button { flex-grow: 1; padding: 8px 5px; font-size: 0.9rem; background-color: #e9ecef; border: 1px solid var(--border-color); color: var(--secondary-color); border-radius: 6px; cursor: pointer; font-weight: 500; }
+        .control-row button:hover { background-color: #ced4da; }
+        
+        /* Caixa de Ferramentas */
+        #toolbox { background-color: var(--light-gray); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px; }
+        #toolbox label { font-weight: bold; margin-right: 10px; }
+        #edit-action { padding: 8px; border-radius: 5px; border: 1px solid #ccc; width: 100%; margin-top: 5px; }
 
-        .controls {
-            margin-top: 20px;
-        }
+        #cut-options { display: flex; gap: 10px; justify-content: center; margin: 15px 0 0; }
+        #cut-options input { width: 100px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; text-align: center; font-size: 1rem; }
+        
+        /* Opções de Velocidade */
+        #speed-options { margin: 15px 0 0; }
+        #speed-options p { margin: 0 0 10px; font-weight: 500; }
+        .speed-buttons { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+        .speed-buttons button { padding: 8px 16px; border: 1px solid var(--border-color); background-color: #fff; border-radius: 20px; cursor: pointer; transition: all 0.2s; }
+        .speed-buttons button.active { background-color: var(--primary-color); color: white; border-color: var(--primary-color); }
 
-        .time-inputs {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin: 15px 0;
-        }
-
-        .time-inputs input {
-            width: 80px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            text-align: center;
-            font-size: 1rem;
-        }
-
-        #cut-button {
-            background-color: #28a745;
-            color: white;
-            padding: 12px 25px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            border: none;
-            font-size: 1rem;
-            transition: background-color 0.3s;
-            width: 100%;
-        }
-
-        #cut-button:hover {
-            background-color: #218838;
-        }
-
+        #process-button { background-color: var(--success-color); color: white; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; border: none; font-size: 1.1rem; transition: background-color 0.3s; width: 100%; margin-top: 20px; }
+        #process-button:hover { background-color: #218838; }
+        
         /* Área de Processamento */
-        #processing-area {
-            margin-top: 20px;
-        }
-
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        #download-link {
-            background-color: #17a2b8;
-            color: white;
-            padding: 12px 25px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: bold;
-            display: inline-block;
-            margin-top: 10px;
-        }
-
-        /* Classes de Utilidade */
-        .hidden {
-            display: none;
-        }
+        #processing-area { margin-top: 20px; }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        #download-link { background-color: var(--info-color); color: white; padding: 12px 25px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 10px; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
     <div class="container">
         <header>
-            <h1>Editor de Vídeo Web</h1>
-            <p>Carregue, corte e salve seu vídeo, tudo no seu navegador.</p>
+            <h1>Editor de Vídeo Avançado</h1>
+            <p>Carregue, edite a velocidade, corte e muito mais, direto no navegador.</p>
         </header>
 
         <main>
@@ -168,34 +99,64 @@
                 <input type="file" id="video-upload" accept="video/*">
             </div>
 
-            <!-- Área do Editor (aparece após o upload) -->
+            <!-- Área do Editor -->
             <div id="editor-area" class="hidden">
                 <video id="video-preview" controls></video>
-                
-                <div class="controls">
-                    <h3>Definir Corte (em segundos)</h3>
-                    <div class="time-inputs">
-                        <input type="number" id="start-time" placeholder="Início" min="0">
-                        <input type="number" id="end-time" placeholder="Fim" min="0">
+                <div id="precision-controls"><!-- ... Controles de precisão ... --></div>
+
+                <div id="toolbox">
+                    <label for="edit-action">Escolha uma Ação:</label>
+                    <select id="edit-action">
+                        <option value="cut" selected>Cortar Vídeo</option>
+                        <option value="speed">Mudar Velocidade</option>
+                        <option value="remove_audio">Remover Áudio</option>
+                        <option value="extract_audio">Extrair Áudio (MP3)</option>
+                        <option value="convert">Converter para MP4</option>
+                    </select>
+
+                    <div id="cut-options">
+                        <input type="number" id="start-time" placeholder="Início (s)" min="0">
+                        <input type="number" id="end-time" placeholder="Fim (s)" min="0">
                     </div>
-                    <button id="cut-button">Cortar Vídeo</button>
+
+                    <div id="speed-options" class="hidden">
+                        <p>Velocidade de Reprodução:</p>
+                        <div class="speed-buttons">
+                            <button data-speed="0.5">0.5x</button>
+                            <button data-speed="0.75">0.75x</button>
+                            <button class="active" data-speed="1.0">Normal</button>
+                            <button data-speed="1.5">1.5x</button>
+                            <button data-speed="2.0">2.0x</button>
+                            <button data-speed="4.0">4.0x</button>
+                        </div>
+                    </div>
                 </div>
+
+                <button id="process-button">Processar Vídeo</button>
             </div>
 
-            <!-- Área de Progresso e Download -->
-            <div id="processing-area" class="hidden">
-                <p id="status-message">Processando... Isso pode levar um momento.</p>
-                <div class="loader"></div>
-                <a id="download-link" class="hidden">Baixar Vídeo Cortado</a>
-            </div>
+            <div id="processing-area" class="hidden"><!-- ... Área de progresso ... --></div>
         </main>
     </div>
+    
+    <!-- Este script e o HTML dentro da área de trabalho principal são copiados para preencher as seções omitidas -->
+    <script>
+      // Preenchendo as seções omitidas com o conteúdo do código anterior
+      document.getElementById('precision-controls').innerHTML = `
+        <div class="control-row" data-unit="frame">
+            <button data-value="-10">-10F</button><button data-value="-5">-5F</button><button data-value="-1">-1F</button>
+            <button data-value="1">+1F</button><button data-value="5">+5F</button><button data-value="10">+10F</button>
+        </div>
+        <div class="control-row" data-unit="second">
+            <button data-value="-10">-10S</button><button data-value="-5">-5S</button><button data-value="-1">-1S</button>
+            <button data-value="1">+1S</button><button data-value="5">+5S</button><button data-value="10">+10S</button>
+        </div>`;
+      document.getElementById('processing-area').innerHTML = `
+        <p id="status-message">Processando...</p>
+        <div class="loader"></div>
+        <a id="download-link" class="hidden">Baixar Resultado</a>`;
+    </script>
 
-    <!-- 
-      Incluindo a versão 0.11.0 do FFmpeg.wasm.
-      Esta versão tem um manejo melhor do erro "SharedArrayBuffer is not defined",
-      permitindo que funcione em ambientes como o GitHub Pages, embora com menor performance.
-    -->
     <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.0/dist/ffmpeg.min.js"></script>
     
     <script>
@@ -204,9 +165,13 @@
         const uploadArea = document.getElementById('upload-area');
         const editorArea = document.getElementById('editor-area');
         const videoPreview = document.getElementById('video-preview');
+        const precisionControls = document.getElementById('precision-controls');
+        const editAction = document.getElementById('edit-action');
+        const cutOptions = document.getElementById('cut-options');
+        const speedOptions = document.getElementById('speed-options');
         const startTimeInput = document.getElementById('start-time');
         const endTimeInput = document.getElementById('end-time');
-        const cutButton = document.getElementById('cut-button');
+        const processButton = document.getElementById('process-button');
         const processingArea = document.getElementById('processing-area');
         const statusMessage = document.getElementById('status-message');
         const downloadLink = document.getElementById('download-link');
@@ -214,28 +179,23 @@
 
         let videoFile = null;
         let ffmpeg = null;
+        const FRAMES_PER_SECOND = 30;
 
-        // Função para carregar o FFmpeg.
-        // A chamamos sob demanda para não carregar recursos desnecessários na inicialização.
+        // Função para carregar o FFmpeg
         const loadFFmpeg = async () => {
             if (!ffmpeg) {
-                const { createFFmpeg, fetchFile } = FFmpeg;
+                const { createFFmpeg } = FFmpeg;
                 ffmpeg = createFFmpeg({
-                    log: true, // Habilita logs no console para depuração
+                    log: true,
                     progress: ({ ratio }) => {
-                        // Garante que o ratio seja um número válido antes de atualizar a UI
-                        if (ratio >= 0 && ratio <= 1) {
-                            statusMessage.textContent = `Processando... ${Math.round(ratio * 100)}%`;
-                        }
+                        if (ratio >= 0 && ratio <= 1) statusMessage.textContent = `Processando... ${Math.round(ratio * 100)}%`;
                     },
                 });
             }
-            if (!ffmpeg.isLoaded()) {
-                await ffmpeg.load();
-            }
+            if (!ffmpeg.isLoaded()) await ffmpeg.load();
         };
-        
-        // Evento para quando um vídeo é escolhido
+
+        // Evento de upload de vídeo
         uploadInput.addEventListener('change', (event) => {
             videoFile = event.target.files[0];
             if (videoFile) {
@@ -246,60 +206,130 @@
             }
         });
 
-        // Evento do botão de cortar
-        cutButton.addEventListener('click', async () => {
-            if (!videoFile) {
-                alert("Por favor, carregue um vídeo primeiro.");
-                return;
+        // Evento para os botões de navegação de precisão
+        precisionControls.addEventListener('click', (e) => {
+            if (e.target.tagName !== 'BUTTON') return;
+            const value = parseFloat(e.target.dataset.value);
+            const unit = e.target.parentElement.dataset.unit;
+            const timeChange = unit === 'frame' ? value / FRAMES_PER_SECOND : value;
+            videoPreview.currentTime = Math.max(0, videoPreview.currentTime + timeChange);
+        });
+        
+        // Mostrar/esconder opções de ferramentas
+        editAction.addEventListener('change', (e) => {
+            const action = e.target.value;
+            cutOptions.classList.toggle('hidden', action !== 'cut');
+            speedOptions.classList.toggle('hidden', action !== 'speed');
+        });
+
+        // Evento para botões de velocidade
+        speedOptions.addEventListener('click', (e) => {
+            if (e.target.tagName !== 'BUTTON') return;
+            // Remove a classe 'active' de todos e adiciona ao clicado
+            speedOptions.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+            e.target.classList.add('active');
+        });
+
+        // Evento principal do botão "Processar"
+        processButton.addEventListener('click', async () => {
+            if (!videoFile) { alert("Por favor, carregue um vídeo primeiro."); return; }
+
+            const selectedAction = editAction.value;
+            
+            // Validações
+            if (selectedAction === 'cut') {
+                if (!startTimeInput.value || !endTimeInput.value || parseFloat(startTimeInput.value) >= parseFloat(endTimeInput.value)) {
+                    alert("Para cortar, defina um tempo de início e fim válidos."); return;
+                }
             }
-
-            const startTime = startTimeInput.value;
-            const endTime = endTimeInput.value;
-
-            if (!startTime || !endTime || parseFloat(startTime) >= parseFloat(endTime)) {
-                alert("Por favor, defina um tempo de início e fim válidos.");
-                return;
+            if (selectedAction === 'speed') {
+                const speed = parseFloat(document.querySelector('#speed-options .active').dataset.speed);
+                if (speed === 1.0) { alert("A velocidade Normal (1.0x) não altera o vídeo. Escolha outra velocidade."); return; }
             }
 
             editorArea.classList.add('hidden');
             processingArea.classList.remove('hidden');
             loader.classList.remove('hidden');
-            statusMessage.textContent = 'Iniciando o editor...';
             downloadLink.classList.add('hidden');
-
+            
             try {
-                statusMessage.textContent = 'Carregando FFmpeg... Pode demorar na primeira vez.';
+                statusMessage.textContent = 'Carregando FFmpeg...';
                 await loadFFmpeg();
                 
-                statusMessage.textContent = 'Carregando arquivo no editor...';
+                statusMessage.textContent = 'Carregando arquivo...';
                 const { fetchFile } = FFmpeg;
                 ffmpeg.FS('writeFile', videoFile.name, await fetchFile(videoFile));
 
-                statusMessage.textContent = 'Iniciando processamento...';
-                
-                // Comando para cortar o vídeo. -c copy é rápido mas depende do codec.
-                await ffmpeg.run('-i', videoFile.name, '-ss', startTime, '-to', endTime, '-c', 'copy', 'output.mp4');
+                let command = [];
+                let outputFilename, mimeType, downloadFilename;
 
+                switch (selectedAction) {
+                    case 'cut':
+                        command = ['-i', videoFile.name, '-ss', startTimeInput.value, '-to', endTimeInput.value, '-c', 'copy', 'output.mp4'];
+                        outputFilename = 'output.mp4'; mimeType = 'video/mp4'; downloadFilename = `cortado_${videoFile.name}`;
+                        break;
+                    
+                    case 'speed':
+                        const speed = parseFloat(document.querySelector('#speed-options .active').dataset.speed);
+                        const videoPts = 1 / speed;
+                        let audioFilter = `atempo=${speed}`;
+                        // O filtro atempo tem limites, para velocidades > 2x, precisamos encadeá-lo.
+                        if (speed > 2.0) audioFilter = `atempo=2.0,atempo=${speed / 2.0}`;
+                        
+                        statusMessage.textContent = `Processando... (mudança de velocidade pode ser lenta)`;
+                        command = ['-i', videoFile.name, '-filter_complex', `[0:v]setpts=${videoPts}*PTS[v];[0:a]${audioFilter}[a]`, '-map', '[v]', '-map', '[a]', 'output.mp4'];
+                        outputFilename = 'output.mp4'; mimeType = 'video/mp4'; downloadFilename = `velocidade_${speed}x_${videoFile.name}`;
+                        break;
+
+                    case 'remove_audio':
+                        command = ['-i', videoFile.name, '-c', 'copy', '-an', 'output.mp4'];
+                        outputFilename = 'output.mp4'; mimeType = 'video/mp4'; downloadFilename = `sem_audio_${videoFile.name}`;
+                        break;
+                    
+                    case 'extract_audio':
+                        command = ['-i', videoFile.name, '-vn', '-c:a', 'libmp3lame', 'output.mp3'];
+                        outputFilename = 'output.mp3'; mimeType = 'audio/mpeg'; downloadFilename = `audio_${videoFile.name.split('.')[0]}.mp3`;
+                        break;
+                    
+                    case 'convert':
+                        statusMessage.textContent = `Processando... (conversão pode ser lenta)`;
+                        command = ['-i', videoFile.name, '-c:v', 'libx264', '-c:a', 'aac', 'output.mp4'];
+                        outputFilename = 'output.mp4'; mimeType = 'video/mp4'; downloadFilename = `convertido_${videoFile.name.split('.')[0]}.mp4`;
+                        break;
+                }
+
+                await ffmpeg.run(...command);
+                
                 statusMessage.textContent = 'Finalizando...';
-                const data = ffmpeg.FS('readFile', 'output.mp4');
-
-                // Limpa o arquivo do sistema de arquivos virtual para liberar memória
+                const data = ffmpeg.FS('readFile', outputFilename);
                 ffmpeg.FS('unlink', videoFile.name);
-                ffmpeg.FS('unlink', 'output.mp4');
+                ffmpeg.FS('unlink', outputFilename);
 
-                const videoURL = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }));
-                
-                downloadLink.href = videoURL;
-                downloadLink.download = `video_cortado_${Date.now()}.mp4`;
+                const blobURL = URL.createObjectURL(new Blob([data.buffer], { type: mimeType }));
+                downloadLink.href = blobURL;
+                downloadLink.download = downloadFilename;
                 
                 downloadLink.classList.remove('hidden');
                 loader.classList.add('hidden');
-                statusMessage.textContent = 'Vídeo pronto para download!';
+                statusMessage.textContent = 'Seu arquivo está pronto!';
 
             } catch (error) {
-                console.error(error); // Exibe o erro detalhado no console para depuração
-                statusMessage.textContent = 'Ocorreu um erro. Tente novamente ou verifique o console (F12) para detalhes.';
+                console.error(error);
+                statusMessage.textContent = 'Ocorreu um erro. Verifique o console (F12) para detalhes.';
                 loader.classList.add('hidden');
+                // Botão para voltar
+                if(!document.getElementById('back-button')) {
+                    const backButton = document.createElement('button');
+                    backButton.id = 'back-button';
+                    backButton.textContent = 'Voltar ao Editor';
+                    backButton.style.marginTop = '10px';
+                    backButton.onclick = () => {
+                        processingArea.classList.add('hidden');
+                        editorArea.classList.remove('hidden');
+                        backButton.remove();
+                    };
+                    processingArea.appendChild(backButton);
+                }
             }
         });
     </script>
